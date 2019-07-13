@@ -23,3 +23,21 @@ db.collection('recipes').onSnapshot(snapshot => {
         }
     })
 })
+
+// add new recipe
+const form = document.querySelector('form')
+form.addEventListener('submit', evt => {
+    evt.preventDefault()
+
+    const { title, ingredients } = form
+    const recipe = {
+        title: title.value,
+        ingredients: ingredients.value
+    }
+
+    db.collection('recipes').add(recipe)
+        .catch(err => console.log(err))
+
+    form.title.value = ''
+    form.ingredients.value = ''
+})
