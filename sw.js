@@ -14,6 +14,17 @@ const assets = [
   'https://fonts.gstatic.com/s/materialicons/v47/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2'
 ];
 
+// cache size limit function
+const limitCacheSize = (name, size) => {
+  caches.open(name).then(cache => {
+    cache.keys().then(keys => {
+      if (keys.length > size) {
+        cache.delete(keys[0]).then(limitCacheSize(name, size));
+      }
+    })
+  })
+}
+
 // install event
 self.addEventListener('install', evt => {
   //console.log('service worker installed');
@@ -47,7 +58,8 @@ self.addEventListener('fetch', evt => {
         .then(fetchRes => 
           caches.open(dynamicCacheName)
             .then(cache => {
-              cache.put(evt.request.url, fetchRes.clone())
+              cache.put(evt.request.url, fetchRes.clone());
+              limitCacheSize(dynamicCacheName, 15)
               return fetchRes
             })
         )
